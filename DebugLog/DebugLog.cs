@@ -8,6 +8,15 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 
+//-----------------------------------使用方法-----------------------------------//*
+/*
+ * DebugLog.Log("hello world");
+ * DebugLog.Log("herro world:{0},{1},{2:X}","haha",1000,1000);
+ * string file_name = "test.txt";
+ * FileLogDebug.WriteLog(FLTEnum.SysLog, "file_name:{0}", file_name);
+*/
+//------------------------------------------------------------------------------//
+
 
 public class DebugLog : MonoBehaviour//SingletonComponent<DebugLog> 
 {
@@ -99,6 +108,9 @@ public class DebugLog : MonoBehaviour//SingletonComponent<DebugLog>
 		return rec_str;
 	}
 
+
+
+
 	public static void Log(string format, params object[] args)
 	{
 		LogOut(String.Format(format, args), LogType.Normal);
@@ -133,6 +145,8 @@ public enum FLTEnum
 	SysLog,
 	Num,
 }
+
+
 
 public class FileLogDebug
 {
