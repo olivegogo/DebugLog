@@ -1,6 +1,4 @@
-﻿//#if OliverDebug
-#define useWriteFileLog
-//#endif
+﻿#define useWriteFileLog
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,7 +16,7 @@ using UnityEngine;
 //------------------------------------------------------------------------------//
 
 
-public class DebugLog : MonoBehaviour//SingletonComponent<DebugLog> 
+public class DebugLog : MonoBehaviour
 {
 	public enum LogType
 	{
@@ -58,7 +56,6 @@ public class DebugLog : MonoBehaviour//SingletonComponent<DebugLog>
 		CheckShowByLogType[(int)type] = isShow;
 	}
 
-	//[Conditional("OliverDebug")]
 	static void LogOut(string str, LogType type)
 	{
 		Init();
@@ -71,7 +68,6 @@ public class DebugLog : MonoBehaviour//SingletonComponent<DebugLog>
 		lineCount++;
 
 		//str = string.Format("[{0:0.00}]{1}", Time.realtimeSinceStartup, str);
-//#if OliverDebug
 		if (m_bIsEnable)
 		{
 			if (type == LogType.Normal)
@@ -81,7 +77,6 @@ public class DebugLog : MonoBehaviour//SingletonComponent<DebugLog>
 			else if (type == LogType.Error)
 				UnityEngine.Debug.LogError(str);
 		}
-//#endif
 
 #if useWriteFileLog
 		FileLogDebug.WriteLog(FLTEnum.SysLog, "[{0}:{2}]{1}", type.ToString(), str, Time.realtimeSinceStartup);
