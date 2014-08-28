@@ -160,11 +160,12 @@ public class FileLogDebug
 		return _fileLogDebug;
 	}
 
-	private static bool m_bIsEditor = true;
-	public static void SetIsEditorState(bool bIsEditor)
+	private static bool m_bIsEditorLog = false;
+	private static bool m_bIsBuildLog = false;
+	public static void SetIsEditorState(bool bIsEditor,bool isBuildLog)
 	{
-		m_bIsEditor = bIsEditor;
-
+		m_bIsEditorLog = bIsEditor;
+		m_bIsBuildLog = isBuildLog;
 	}
 
 	FileLogDebug()
@@ -177,7 +178,27 @@ public class FileLogDebug
 	FileStream OpenLogFile(FLTEnum type)
 	{
 //#if UNITY_EDITOR
-		if(m_bIsEditor)
+		if (m_bIsBuildLog)
+		{
+			string logpath = Application.persistentDataPath + "/log";
+			string filepath = logpath + "/" + type.ToString() + ".log";
+
+			if (!File.Exists(filepath))
+			{
+				Directory.CreateDirectory(logpath);
+				return new FileStream(filepath, FileMode.Create);
+			}
+			else
+			{
+				//string stradd = File.GetLastWriteTime(filepath).ToString("yyyyMMdd-HHmmss");
+				//string filepath2 = logpath+"/"+ type.ToString() + "_" + stradd + ".log";
+				//File.Copy(filepath, filepath2);
+
+				return new FileStream(filepath, FileMode.Create);
+			}
+
+		}		
+		else if(m_bIsEditorLog)
 		{
 			//Application.persistentDataPath
 			//Application.dataPath
@@ -199,28 +220,11 @@ public class FileLogDebug
 			}
 
 		}
-		else 
-		{
-			string logpath = Application.persistentDataPath + "/log";
-			string filepath = logpath + "/" + type.ToString() + ".log";
-
-			if (!File.Exists(filepath))
-			{
-				Directory.CreateDirectory(logpath);
-				return new FileStream(filepath, FileMode.Create);
-			}
-			else
-			{
-				//string stradd = File.GetLastWriteTime(filepath).ToString("yyyyMMdd-HHmmss");
-				//string filepath2 = logpath+"/"+ type.ToString() + "_" + stradd + ".log";
-				//File.Copy(filepath, filepath2);
-
-				return new FileStream(filepath, FileMode.Create);
-			}
-
-		}
+		 
 //#else
 //#endif
+
+		return null;
 	}
 
 	static public void WriteLog(FLTEnum type, string format, params object[] args)
