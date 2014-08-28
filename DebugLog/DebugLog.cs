@@ -160,6 +160,13 @@ public class FileLogDebug
 		return _fileLogDebug;
 	}
 
+	private static bool m_bIsEditor = true;
+	public static void SetIsEditorState(bool bIsEditor)
+	{
+		m_bIsEditor = bIsEditor;
+
+	}
+
 	FileLogDebug()
 	{
 #if useWriteFileLog
@@ -169,43 +176,51 @@ public class FileLogDebug
 
 	FileStream OpenLogFile(FLTEnum type)
 	{
-#if UNITY_EDITOR
-		//Application.persistentDataPath
-		//Application.dataPath
-		string logpath = Application.dataPath + "/../log";
-		string filepath = logpath + "/" + type.ToString() + ".log";
-
-		if (!File.Exists(filepath))
+//#if UNITY_EDITOR
+		if(m_bIsEditor)
 		{
-			Directory.CreateDirectory(logpath);
-			return new FileStream(filepath, FileMode.Create);
-		}
-		else
-		{
-			string stradd = File.GetLastWriteTime(filepath).ToString("yyyyMMdd-HHmmss");
-			string filepath2 = logpath + "/" + type.ToString() + "_" + stradd + ".log";
-			File.Copy(filepath, filepath2);
+			//Application.persistentDataPath
+			//Application.dataPath
+			string logpath = Application.dataPath + "/../log";
+			string filepath = logpath + "/" + type.ToString() + ".log";
 
-			return new FileStream(filepath, FileMode.Create);
-		}
-#else
-		string logpath = Application.persistentDataPath + "/log";
-		string filepath = logpath + "/" + type.ToString() + ".log";
+			if (!File.Exists(filepath))
+			{
+				Directory.CreateDirectory(logpath);
+				return new FileStream(filepath, FileMode.Create);
+			}
+			else
+			{
+				string stradd = File.GetLastWriteTime(filepath).ToString("yyyyMMdd-HHmmss");
+				string filepath2 = logpath + "/" + type.ToString() + "_" + stradd + ".log";
+				File.Copy(filepath, filepath2);
 
-		if (!File.Exists(filepath))
-		{
-			Directory.CreateDirectory(logpath);
-			return new FileStream(filepath, FileMode.Create);
-		}
-		else
-		{
-			//string stradd = File.GetLastWriteTime(filepath).ToString("yyyyMMdd-HHmmss");
-			//string filepath2 = logpath+"/"+ type.ToString() + "_" + stradd + ".log";
-			//File.Copy(filepath, filepath2);
+				return new FileStream(filepath, FileMode.Create);
+			}
 
-			return new FileStream(filepath, FileMode.Create);
 		}
-#endif
+		else 
+		{
+			string logpath = Application.persistentDataPath + "/log";
+			string filepath = logpath + "/" + type.ToString() + ".log";
+
+			if (!File.Exists(filepath))
+			{
+				Directory.CreateDirectory(logpath);
+				return new FileStream(filepath, FileMode.Create);
+			}
+			else
+			{
+				//string stradd = File.GetLastWriteTime(filepath).ToString("yyyyMMdd-HHmmss");
+				//string filepath2 = logpath+"/"+ type.ToString() + "_" + stradd + ".log";
+				//File.Copy(filepath, filepath2);
+
+				return new FileStream(filepath, FileMode.Create);
+			}
+
+		}
+//#else
+//#endif
 	}
 
 	static public void WriteLog(FLTEnum type, string format, params object[] args)
