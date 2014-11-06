@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
-
 //-----------------------------------使用方法-----------------------------------//*
 /*
  * DebugLog.Log("hello world");
@@ -14,7 +13,6 @@ using UnityEngine;
  * FileLogDebug.WriteLog(FLTEnum.SysLog, "file_name:{0}", file_name);
 */
 //------------------------------------------------------------------------------//
-
 
 public class DebugLog : MonoBehaviour
 {
@@ -58,29 +56,29 @@ public class DebugLog : MonoBehaviour
 
 	static void LogOut(string str, LogType type)
 	{
-		Init();
-
-		if (!CheckShowByLogType[(int)type])
-			return;
-		ClearStr();
-
-		outStr += "<=========" + lineCount + "=========>\n" + str + "\n";
-		lineCount++;
-
-		//str = string.Format("[{0:0.00}]{1}", Time.realtimeSinceStartup, str);
 		if (m_bIsEnable)
 		{
-			if (type == LogType.Normal)
-				UnityEngine.Debug.Log(str);
-			else if (type == LogType.Warning)
-				UnityEngine.Debug.LogWarning(str);
-			else if (type == LogType.Error)
-				UnityEngine.Debug.LogError(str);
+			Init();
+
+			if (!CheckShowByLogType[(int)type])
+				return;
+			ClearStr();
+
+			outStr += "<=========" + lineCount + "=========>\n" + str + "\n";
+			lineCount++;
+
+			//str = string.Format("[{0:0.00}]{1}", Time.realtimeSinceStartup, str);
+				if (type == LogType.Normal)
+					UnityEngine.Debug.Log(str);
+				else if (type == LogType.Warning)
+					UnityEngine.Debug.LogWarning(str);
+				else if (type == LogType.Error)
+					UnityEngine.Debug.LogError(str);
+#if useWriteFileLog
+			FileLogDebug.WriteLog(FLTEnum.SysLog, "[{0}:{2}]{1}", type.ToString(), str, Time.realtimeSinceStartup);
+#endif
 		}
 
-#if useWriteFileLog
-		FileLogDebug.WriteLog(FLTEnum.SysLog, "[{0}:{2}]{1}", type.ToString(), str, Time.realtimeSinceStartup);
-#endif
 	}
 	static void ClearStr()
 	{
@@ -108,29 +106,36 @@ public class DebugLog : MonoBehaviour
 
 	public static void Log(string format, params object[] args)
 	{
-		LogOut(String.Format(format, args), LogType.Normal);
+		if (m_bIsEnable)
+			LogOut(String.Format(format, args), LogType.Normal);
 	}
 	public static void LogW(string format, params object[] args)
 	{
-		LogOut(String.Format(format, args), LogType.Warning);
+		if (m_bIsEnable)
+			LogOut(String.Format(format, args), LogType.Warning);
 	}
 	public static void LogE(string format, params object[] args)
 	{
-		LogOut(String.Format(format, args), LogType.Error);
+		if (m_bIsEnable)
+			LogOut(String.Format(format, args), LogType.Error);
 	}
 	public static void FileLog(FLTEnum type, string format, params object[] args)
 	{
 		FileLogDebug.WriteLog(type, format, args);
 	}
 	public static bool isShowMessage;
-	public bool isShowMessageOnScreen = true;
+	public bool isShowMessageOnScreen = false;
 	void OnGUI()
 	{
-		isShowMessage = isShowMessageOnScreen;
-		if (isShowMessageOnScreen == true)
+		if (m_bIsEnable)
 		{
-			GUI.color = Color.green;
-			GUI.Label(new Rect(0, 30, 400, 700), outStr);
+			isShowMessage = isShowMessageOnScreen;
+			if (isShowMessageOnScreen == true)
+			{
+				GUI.color = Color.green;
+				GUI.Label(new Rect(0, 30, 400, 700), outStr);
+			}
+
 		}
 	}
 }
