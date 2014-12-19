@@ -27,8 +27,10 @@ public class DebugLog : MonoBehaviour
 	private static string outStr;
 	private static int lineCount = 0;
 	private static bool m_bIsInit = false;
+	private static DateTime m_StartTime;
 	public void Awake()
 	{
+		m_StartTime = DateTime.Now;
 		Init();
 	}
 	public static void Init()
@@ -75,7 +77,7 @@ public class DebugLog : MonoBehaviour
 				else if (type == LogType.Error)
 					UnityEngine.Debug.LogError(str);
 #if useWriteFileLog
-			FileLogDebug.WriteLog(FLTEnum.SysLog, "[{0}:{2}]{1}", type.ToString(), str, Time.realtimeSinceStartup);
+				FileLogDebug.WriteLog(FLTEnum.SysLog, "[{0}:{2}]{1}", type.ToString(), str, (DateTime.Now - m_StartTime).TotalMilliseconds);
 #endif
 		}
 
@@ -125,6 +127,10 @@ public class DebugLog : MonoBehaviour
 	}
 	public static bool isShowMessage;
 	public bool isShowMessageOnScreen = false;
+	public void SetShowMsgOnScreen(bool isShow)
+	{
+		isShowMessageOnScreen = isShow;
+	}
 	void OnGUI()
 	{
 		if (m_bIsEnable)
