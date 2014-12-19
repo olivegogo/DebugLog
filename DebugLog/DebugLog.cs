@@ -27,10 +27,10 @@ public class DebugLog : MonoBehaviour
 	private static string outStr;
 	private static int lineCount = 0;
 	private static bool m_bIsInit = false;
-	private static DateTime m_StartTime;
+	private static DateTime m_StartTime = DateTime.Now;
 	public void Awake()
 	{
-		m_StartTime = DateTime.Now;
+		//m_StartTime = DateTime.Now;
 		Init();
 	}
 	public static void Init()
@@ -56,6 +56,11 @@ public class DebugLog : MonoBehaviour
 		CheckShowByLogType[(int)type] = isShow;
 	}
 
+	public static double GetNowTimeFromStart()
+	{
+		return (DateTime.Now - m_StartTime).TotalMilliseconds;
+	}
+
 	static void LogOut(string str, LogType type)
 	{
 		if (m_bIsEnable)
@@ -77,7 +82,7 @@ public class DebugLog : MonoBehaviour
 				else if (type == LogType.Error)
 					UnityEngine.Debug.LogError(str);
 #if useWriteFileLog
-				FileLogDebug.WriteLog(FLTEnum.SysLog, "[{0}:{2}]{1}", type.ToString(), str, (DateTime.Now - m_StartTime).TotalMilliseconds);
+				FileLogDebug.WriteLog(FLTEnum.SysLog, "[{0}:{2}]{1}", type.ToString(), str, GetNowTimeFromStart());
 #endif
 		}
 
