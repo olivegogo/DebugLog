@@ -104,12 +104,38 @@ public class DebugLog : MonoBehaviour
 			if (i % 16 == 15)
 				rec_str += "\n==>";
 		}
-
 		return rec_str;
 	}
 
 
+	public static string Bytes2HexStr(byte[] bytes)
+	{
+		string rec_str = "";
+		for (int i = 0; i < bytes.Length; ++i)
+		{
+			rec_str += " " + String.Format("0x{0:X2},", bytes[i]);
+			if (i % 16 == 15)
+				rec_str += "\n";
+		}
+		return rec_str;
+	}
 
+	public static string Bytes2DecStr(byte[] bytes)
+	{
+		string rec_str = "";
+		for (int i = 0; i < bytes.Length; ++i)
+		{
+			rec_str += " " + String.Format("{0},", bytes[i]);
+			if (i % 16 == 15)
+				rec_str += "\n";
+		}
+		return rec_str;
+	}
+
+	public static string String2HexStr(string str)
+	{
+		return Bytes2HexStr(System.Text.Encoding.ASCII.GetBytes(str));
+	}
 
 	public static void Log(string format, params object[] args)
 	{
