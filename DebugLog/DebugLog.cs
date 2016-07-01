@@ -32,6 +32,14 @@ public class DebugLog : MonoBehaviour
 	private static bool m_bIsInit = false;
 	private static DateTime m_StartTime = DateTime.Now;
 	private static bool UseColorMode = false;
+
+	private static ColorEnum[] LogColorOrigin = new ColorEnum[]
+	{
+		ColorEnum.white,
+		ColorEnum.yellow,
+		ColorEnum.red,
+	};
+	private static ColorEnum[] LogColor = LogColorOrigin;
 	public void Awake()
 	{
 		//m_StartTime = DateTime.Now;
@@ -54,7 +62,13 @@ public class DebugLog : MonoBehaviour
 		m_bIsEnable = isEnable;
 		UseColorMode = isUseColorMode;
 	}
-
+	public static void SetLogTypeColor(LogType type,ColorEnum clr)
+	{
+		if(type < LogType.Num)
+		{
+			LogColor[(int)type] = clr;
+		}
+	}
 	public static void SetShowType(LogType type, bool isShow)
 	{
 		CheckShowByLogType[(int)type] = isShow;
@@ -81,13 +95,20 @@ public class DebugLog : MonoBehaviour
 			//str = string.Format("[{0:0.00}]{1}", Time.realtimeSinceStartup, str);
 				if (type == LogType.Normal)
 				{
-					UnityEngine.Debug.Log(str);
+					if (UseColorMode)
+					{
+						UnityEngine.Debug.Log(str.AddColorRichText(LogColor[(int)type]));
+					}
+					else
+					{
+						UnityEngine.Debug.Log(str);
+					}
 				}
 				else if (type == LogType.Warning)
 				{
 					if (UseColorMode)
 					{
-						UnityEngine.Debug.Log(str.AddColorRichText(ColorEnum.yellow));
+						UnityEngine.Debug.Log(str.AddColorRichText(LogColor[(int)type]));
 					}
 					else
 					{
@@ -98,7 +119,7 @@ public class DebugLog : MonoBehaviour
 				{
 					if (UseColorMode)
 					{
-						UnityEngine.Debug.Log(str.AddColorRichText(ColorEnum.red));
+						UnityEngine.Debug.Log(str.AddColorRichText(LogColor[(int)type]));
 					}
 					else
 					{
@@ -211,16 +232,35 @@ public class DebugLog : MonoBehaviour
 	{
 		DebugLog.Log(format,args);
 	}
+	public static void LogFormat(ColorEnum clr,string format, params object[] args)
+	{
+		SetLogTypeColor(LogType.Normal, clr);
+		DebugLog.Log(format, args);
+		SetLogTypeColor(LogType.Normal, LogColorOrigin[(int)LogType.Normal]);
+	}
 
 	public static void LogWarningFormat(string format, params object[] args)
 	{
 		DebugLog.LogW(format, args);
+	}
+	public static void LogWarningFormat(ColorEnum clr, string format, params object[] args)
+	{
+		SetLogTypeColor(LogType.Warning, clr);
+		DebugLog.LogW(format, args);
+		SetLogTypeColor(LogType.Warning, LogColorOrigin[(int)LogType.Warning]);
 	}
 
 	public static void LogErrorFormat(string format, params object[] args)
 	{
 		DebugLog.LogE(format, args);
 	}
+	public static void LogErrorFormat(ColorEnum clr, string format, params object[] args)
+	{
+		SetLogTypeColor(LogType.Error, clr);
+		DebugLog.LogE(format, args);
+		SetLogTypeColor(LogType.Error, LogColorOrigin[(int)LogType.Error]);
+	}
+
 
 
 }
