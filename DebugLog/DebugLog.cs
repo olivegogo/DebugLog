@@ -87,7 +87,7 @@ public class DebugLog : MonoBehaviour
 				{
 					if (UseColorMode)
 					{
-						UnityEngine.Debug.Log(string.Format("W/{0}".AddColorRichText(ColorEnum.yellow),str));
+						UnityEngine.Debug.Log(str.AddColorRichText(ColorEnum.yellow));
 					}
 					else
 					{
@@ -98,7 +98,7 @@ public class DebugLog : MonoBehaviour
 				{
 					if (UseColorMode)
 					{
-						UnityEngine.Debug.Log(string.Format("E/{0}".AddColorRichText(ColorEnum.red), str));
+						UnityEngine.Debug.Log(str.AddColorRichText(ColorEnum.red));
 					}
 					else
 					{
