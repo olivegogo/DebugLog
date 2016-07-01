@@ -39,7 +39,12 @@ public class DebugLog : MonoBehaviour
 		ColorEnum.yellow,
 		ColorEnum.red,
 	};
-	private static ColorEnum[] LogColor = LogColorOrigin;
+	private static ColorEnum[] LogColor = new ColorEnum[]
+	{
+		ColorEnum.white,
+		ColorEnum.yellow,
+		ColorEnum.red,
+	};
 	public void Awake()
 	{
 		//m_StartTime = DateTime.Now;
