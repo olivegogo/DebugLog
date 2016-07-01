@@ -13,7 +13,6 @@ using UnityEngine;
  * FileLogDebug.WriteLog(FLTEnum.SysLog, "file_name:{0}", file_name);
 */
 //------------------------------------------------------------------------------//
-
 public class DebugLog : MonoBehaviour
 {
 	public enum LogType
@@ -25,9 +24,14 @@ public class DebugLog : MonoBehaviour
 	}
 	private static bool[] CheckShowByLogType = new bool[(int)LogType.Num];
 	private static string outStr;
+	public static string OutStr
+	{
+		get { return outStr; }
+	}
 	private static int lineCount = 0;
 	private static bool m_bIsInit = false;
 	private static DateTime m_StartTime = DateTime.Now;
+	private static bool UseColorMode = false;
 	public void Awake()
 	{
 		//m_StartTime = DateTime.Now;
@@ -45,10 +49,10 @@ public class DebugLog : MonoBehaviour
 		}
 	}
 	private static bool m_bIsEnable = false;
-	public static void SetEnableState(bool isEnable)
+	public static void SetEnableState(bool isEnable,bool isUseColorMode = false)
 	{
 		m_bIsEnable = isEnable;
-
+		UseColorMode = isUseColorMode;
 	}
 
 	public static void SetShowType(LogType type, bool isShow)
@@ -76,11 +80,31 @@ public class DebugLog : MonoBehaviour
 
 			//str = string.Format("[{0:0.00}]{1}", Time.realtimeSinceStartup, str);
 				if (type == LogType.Normal)
+				{
 					UnityEngine.Debug.Log(str);
+				}
 				else if (type == LogType.Warning)
-					UnityEngine.Debug.LogWarning(str);
+				{
+					if (UseColorMode)
+					{
+						UnityEngine.Debug.Log(string.Format("W/{0}".AddColorRichText(ColorEnum.yellow),str));
+					}
+					else
+					{
+						UnityEngine.Debug.LogWarning(str);
+					}
+				}
 				else if (type == LogType.Error)
-					UnityEngine.Debug.LogError(str);
+				{
+					if (UseColorMode)
+					{
+						UnityEngine.Debug.Log(string.Format("E/{0}".AddColorRichText(ColorEnum.red), str));
+					}
+					else
+					{
+						UnityEngine.Debug.LogError(str);
+					}
+				}
 #if useWriteFileLog
 				FileLogDebug.WriteLog(FLTEnum.SysLog, "[{0}:{2}]{1}", type.ToString(), str, GetNowTimeFromStart());
 #endif
@@ -162,7 +186,7 @@ public class DebugLog : MonoBehaviour
 	{
 		isShowMessageOnScreen = isShow;
 	}
-	void OnGUI()
+	public void OnGUI()
 	{
 		if (m_bIsEnable)
 		{
@@ -175,7 +199,69 @@ public class DebugLog : MonoBehaviour
 
 		}
 	}
+
+	static public void Assert(bool _bCondition)
+	{
+		if (!_bCondition)
+		{
+			throw new Exception();
+		}
+	}
+	public static void LogFormat(string format, params object[] args)
+	{
+		DebugLog.Log(format,args);
+	}
+
+	public static void LogWarningFormat(string format, params object[] args)
+	{
+		DebugLog.LogW(format, args);
+	}
+
+	public static void LogErrorFormat(string format, params object[] args)
+	{
+		DebugLog.LogE(format, args);
+	}
+
+
 }
+static public class AddColorRichTextClass
+{
+	static public string AddColorRichText(this string strIn, Color color)
+	{
+		return string.Format("<color=#{0:x2}{1:x2}{2:x2}{3:x2}>{4}</color>", (int)(color.r * 255), (int)(color.g * 255), (int)(color.b * 255), (int)(color.a * 255), strIn);
+	}
+	static public string AddColorRichText(this string strIn, ColorEnum color)
+	{
+		return string.Format("<color={0}>{1}</color>", color.ToString(), strIn);
+	}
+
+}
+public enum ColorEnum
+{
+	aqua,
+	black,
+	blue,
+	brown,
+	cyan,
+	darkblue,
+	fuchsia,
+	green,
+	grey,
+	lightblue,
+	lime,
+	magenta,
+	maroon,
+	navy,
+	olive,
+	orange,
+	purple,
+	red,
+	silver,
+	teal,
+	white,
+	yellow,
+}
+
 public enum FLTEnum
 {
 	NetLog,
